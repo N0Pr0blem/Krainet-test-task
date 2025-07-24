@@ -1,9 +1,6 @@
 package com.krainet.test_task.controller;
 
-import com.krainet.test_task.dto.user.UserFilter;
-import com.krainet.test_task.dto.user.UserRequestDto;
-import com.krainet.test_task.dto.user.UserResponseDto;
-import com.krainet.test_task.dto.user.UserUpdateDto;
+import com.krainet.test_task.dto.user.*;
 import com.krainet.test_task.mapper.UserMapper;
 import com.krainet.test_task.model.UserEntity;
 import com.krainet.test_task.service.UserService;
@@ -83,8 +80,8 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<UserResponseDto> updateUserById(@PathVariable(name = "userId") Long userId,
-                                                 @Valid @RequestBody UserUpdateDto userUpdateDto) {
-        UserEntity userEntity = userService.updateUser(userId,userUpdateDto);
+                                                 @Valid @RequestBody UserUpdateForAdminDto userUpdateDto) {
+        UserEntity userEntity = userService.updateUserForAdmin(userId,userUpdateDto);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userMapper.toDto(userEntity));
     }

@@ -3,6 +3,7 @@ package com.krainet.test_task.service.impl;
 import com.krainet.test_task.dto.user.UserFilter;
 import com.krainet.test_task.dto.user.UserRequestDto;
 import com.krainet.test_task.dto.user.UserUpdateDto;
+import com.krainet.test_task.dto.user.UserUpdateForAdminDto;
 import com.krainet.test_task.exception.ApiException;
 import com.krainet.test_task.model.UserEntity;
 import com.krainet.test_task.repository.UserRepository;
@@ -120,6 +121,34 @@ public class UserServiceImpl implements UserService {
     public void deleteByUsername(String name) {
         userRepository.delete(getUserByUsername(name));
         logger.info("Delete user with username: "+name);
+    }
+
+    @Override
+    public UserEntity updateUserForAdmin(Long userId, UserUpdateForAdminDto userUpdateDto) {
+        UserEntity user = getUserById(userId);
+
+        if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
+            user.setUsername(userUpdateDto.getUsername());
+        }
+        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
+            user.setEmail(userUpdateDto.getEmail());
+        }
+        if (userUpdateDto.getFirstName() != null && !userUpdateDto.getFirstName().isEmpty()) {
+            user.setFirstName(userUpdateDto.getFirstName());
+        }
+        if (userUpdateDto.getLastName() != null && !userUpdateDto.getLastName().isEmpty()) {
+            user.setLastName(userUpdateDto.getLastName());
+        }
+        if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
+            user.setPassword(userUpdateDto.getPassword());
+        }
+        if (userUpdateDto.getRole() != null && !userUpdateDto.getRole().isEmpty()) {
+            user.setRole(userUpdateDto.getRole());
+        }
+
+        logger.info("User with ID: "+user.getId()+" updated by Admin");
+
+        return userRepository.save(user);
     }
 
     private Specification<UserEntity> buildSpecification(UserFilter filter) {
