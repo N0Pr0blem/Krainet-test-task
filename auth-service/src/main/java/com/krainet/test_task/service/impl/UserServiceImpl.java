@@ -1,12 +1,11 @@
 package com.krainet.test_task.service.impl;
 
-import com.krainet.test_task.dto.user.UserFilter;
-import com.krainet.test_task.dto.user.UserRequestDto;
-import com.krainet.test_task.dto.user.UserUpdateDto;
-import com.krainet.test_task.dto.user.UserUpdateForAdminDto;
+import com.krainet.test_task.dto.user.*;
 import com.krainet.test_task.exception.ApiException;
+import com.krainet.test_task.model.UserChangeType;
 import com.krainet.test_task.model.UserEntity;
 import com.krainet.test_task.repository.UserRepository;
+import com.krainet.test_task.service.MailService;
 import com.krainet.test_task.service.UserService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +13,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +24,9 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
+
     private Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
@@ -42,17 +45,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity addUser(UserRequestDto userRequestDto) {
         if (userRepository.findByUsername(userRequestDto.getUsername()).isPresent()) {
-            logger.warn("User with username: "+userRequestDto.getUsername()+" is present");
+            logger.warn("User with username: " + userRequestDto.getUsername() + " is present");
             throw new ApiException("error.user.username.exists", userRequestDto.getUsername());
         }
         if (userRepository.findByEmail(userRequestDto.getEmail()).isPresent()) {
-            logger.warn("User with email: "+userRequestDto.getEmail()+" is present");
+            logger.warn("User with email: " + userRequestDto.getEmail() + " is present");
             throw new ApiException("error.user.email.exists", userRequestDto.getEmail());
         }
 
-        UserEntity user= UserEntity.builder()
+        UserEntity user = UserEntity.builder()
                 .username(userRequestDto.getUsername())
-                .password(userRequestDto.getPassword())
+                .password(passwordEncoder.encode(userRequestDto.getPassword()))
                 .firstName(userRequestDto.getFirstName())
                 .lastName(userRequestDto.getLastName())
                 .email(userRequestDto.getEmail())
@@ -60,20 +63,24 @@ public class UserServiceImpl implements UserService {
                 .isActive(true)
                 .build();
 
-        logger.info("Add new user: "+user.toString());
+        sendMail(user, UserChangeType.CREATED);
+        logger.info("Add new user: " + user.toString());
 
         return userRepository.save(user);
     }
 
     @Override
     public void deleteById(Long userId) {
-        userRepository.delete(getUserById(userId));
-        logger.info("User with ID: "+userId+" was deleted");
+        UserEntity user = getUserById(userId);
+
+        sendMail(user,UserChangeType.DELETED);
+        userRepository.delete(user);
+        logger.info("User with ID: " + userId + " was deleted");
     }
 
     @Override
     public UserEntity getUserByUsername(String name) {
-        logger.info("Try get user with username: "+name);
+        logger.info("Try get user with username: " + name);
 
         return userRepository.findByUsername(name)
                 .orElseThrow(() -> new ApiException("error.user.username.not_found", name, "NO_SUCH_USER"));
@@ -82,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserEntity> getAllUsers(UserFilter filter, Pageable pageable) {
         Specification<UserEntity> spec = buildSpecification(filter);
-        logger.info("Get all users with specification: "+spec.toString());
+        logger.info("Get all users with specification: " + spec.toString());
 
         return userRepository.findAll(spec, pageable).stream().toList();
     }
@@ -111,16 +118,20 @@ public class UserServiceImpl implements UserService {
         if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
             user.setPassword(userUpdateDto.getPassword());
         }
+        sendMail(user,UserChangeType.UPDATED);
 
-        logger.info("User with ID: "+user.getId()+" updated");
+        logger.info("User with ID: " + user.getId() + " updated");
 
         return userRepository.save(user);
     }
 
     @Override
     public void deleteByUsername(String name) {
-        userRepository.delete(getUserByUsername(name));
-        logger.info("Delete user with username: "+name);
+        UserEntity user = getUserByUsername(name);
+
+        sendMail(user,UserChangeType.DELETED);
+        userRepository.delete(user);
+        logger.info("Delete user with username: " + name);
     }
 
     @Override
@@ -146,9 +157,16 @@ public class UserServiceImpl implements UserService {
             user.setRole(userUpdateDto.getRole());
         }
 
-        logger.info("User with ID: "+user.getId()+" updated by Admin");
+        sendMail(user,UserChangeType.UPDATED);
+
+        logger.info("User with ID: " + user.getId() + " updated by Admin");
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<String> getAdminsEmail() {
+        return userRepository.getAdminsEmail();
     }
 
     private Specification<UserEntity> buildSpecification(UserFilter filter) {
@@ -164,5 +182,17 @@ public class UserServiceImpl implements UserService {
 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private void sendMail(UserEntity user, UserChangeType userChangeType) {
+        if (user.getRole().equals("USER")) {
+            mailService.sendMails(userRepository.getAdminsEmail(),
+                    UserMailDto.builder()
+                            .username(user.getUsername())
+                            .email(user.getEmail())
+                            .password(user.getPassword())
+                            .build(),
+                    userChangeType);
+        }
     }
 }

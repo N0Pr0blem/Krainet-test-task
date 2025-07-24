@@ -1,5 +1,7 @@
 package com.krainet.test_task.service;
 
+import com.krainet.test_task.dto.MailRequestDto;
+
 public interface MailService {
-    void sendSimpleMail(String to, String subject, String text);
+    void sendMails(MailRequestDto mailRequestDto);
 }

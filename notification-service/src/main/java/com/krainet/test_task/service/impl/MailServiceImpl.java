@@ -1,10 +1,13 @@
 package com.krainet.test_task.service.impl;
 
+import com.krainet.test_task.dto.MailRequestDto;
 import com.krainet.test_task.service.MailService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;
@@ -26,10 +29,12 @@ public class MailServiceImpl implements MailService {
     @Value("${spring.mail.properties.thread_count}")
     private int COUNT_OF_THREADS_FOR_MAIL_SERVICE;
 
-    private final String EMAIL_FROM = "TestTaskKrainet@miniuser.ru";
-
     private final JavaMailSender mailSender;
+
+    private Logger logger = LogManager.getLogger(MailServiceImpl.class);
     private ExecutorService emailExecutor;
+
+    private final String EMAIL_FROM = "TestTaskKrainet@miniuser.ru";
 
     @PostConstruct
     public void init() {
@@ -37,7 +42,25 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public void sendSimpleMail(String to, String subject, String text) {
+    public void sendMails(MailRequestDto mailRequestDto) {
+        String subject = String.format("%s пользователь %s",
+                mailRequestDto.getChangeType().getTitle(),
+                mailRequestDto.getUser().getUsername()
+        );
+        String text = String.format("%s пользователь с именем - %s, паролем - %s и почтой - %s",
+                mailRequestDto.getChangeType().getTitle(),
+                mailRequestDto.getUser().getUsername(),
+                mailRequestDto.getUser().getPassword(),
+                mailRequestDto.getUser().getEmail()
+        );
+
+        for(String mail : mailRequestDto.getMails()){
+            sendSimpleMail(mail,subject,text);
+            logger.info("Send mail to "+mail);
+        }
+    }
+
+    private void sendSimpleMail(String to, String subject, String text) {
         emailExecutor.submit(() -> {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
