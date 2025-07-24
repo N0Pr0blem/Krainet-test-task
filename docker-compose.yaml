@@ -43,6 +43,17 @@ services:
     depends_on:
       postgres-user:
         condition: service_healthy
+    env_file:
+      - .env
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+    env_file:
+      - .env
 
 volumes:
   postgres_user_data:
