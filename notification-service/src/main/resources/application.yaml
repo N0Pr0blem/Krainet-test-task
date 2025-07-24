@@ -1,3 +1,19 @@
+server:
+  port: 8082
+
 spring:
   application:
     name: notification-service
+  mail:
+    host: connect.smtp.bz
+    port: 587
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      thread_count: ${SPRING_MAIL_TREAD_COUNT}
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
