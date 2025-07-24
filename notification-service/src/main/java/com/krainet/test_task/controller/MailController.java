@@ -18,9 +18,7 @@ public class MailController {
 
     @PostMapping
     public ResponseEntity<String> sendMails(@RequestBody MailRequestDto mailRequestDto){
-        for (String mail: mailRequestDto.getMails()){
-            mailService.sendSimpleMail(mail,mailRequestDto.getSubject(),mailRequestDto.getText());
-        }
+        mailService.sendMails(mailRequestDto);
         return ResponseEntity.ok("Mails successfully send");
     }
 }

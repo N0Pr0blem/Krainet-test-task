@@ -30,4 +30,6 @@ public interface UserService {
     void deleteByUsername(String name);
 
     UserEntity updateUserForAdmin(Long userId, UserUpdateForAdminDto userUpdateDto);
+
+    List<String> getAdminsEmail();
 }
