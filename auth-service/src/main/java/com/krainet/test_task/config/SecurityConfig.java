@@ -20,15 +20,23 @@ public class SecurityConfig {
             "/api/v1/auth/login"
     };
 
+    private final String [] authenticateRoutes ={
+            "/api/v1/auth/register"
+    };
+
+    private final String [] adminRoutes ={
+            "/api/v1/users/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicRoutes).permitAll()
-                        //.requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/v1/users/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers(adminRoutes).hasAuthority("ADMIN")
+                        .requestMatchers(authenticateRoutes).authenticated()
+                        .anyRequest().authenticated()
                 );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

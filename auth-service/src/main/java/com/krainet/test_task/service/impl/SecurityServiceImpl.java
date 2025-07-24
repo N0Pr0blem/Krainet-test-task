@@ -1,9 +1,8 @@
-package com.krainet.test_task.security.impl;
+package com.krainet.test_task.service.impl;
 
-import com.krainet.test_task.dto.user.UserFilter;
 import com.krainet.test_task.exception.AuthException;
 import com.krainet.test_task.model.UserEntity;
-import com.krainet.test_task.security.SecurityService;
+import com.krainet.test_task.service.SecurityService;
 import com.krainet.test_task.security.TokenDetails;
 import com.krainet.test_task.service.UserService;
 import io.jsonwebtoken.Claims;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

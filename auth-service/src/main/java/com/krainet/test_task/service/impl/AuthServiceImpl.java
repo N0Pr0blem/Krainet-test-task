@@ -1,13 +1,12 @@
-package com.krainet.test_task.security.impl;
+package com.krainet.test_task.service.impl;
 
 import com.krainet.test_task.dto.auth.AuthRequestDto;
 import com.krainet.test_task.dto.auth.AuthResponseDto;
 import com.krainet.test_task.dto.auth.RegisterRequestDto;
 import com.krainet.test_task.dto.user.UserRequestDto;
-import com.krainet.test_task.dto.user.UserResponseDto;
 import com.krainet.test_task.model.UserEntity;
-import com.krainet.test_task.security.AuthService;
-import com.krainet.test_task.security.SecurityService;
+import com.krainet.test_task.service.AuthService;
+import com.krainet.test_task.service.SecurityService;
 import com.krainet.test_task.security.TokenDetails;
 import com.krainet.test_task.service.UserService;
 import lombok.RequiredArgsConstructor;

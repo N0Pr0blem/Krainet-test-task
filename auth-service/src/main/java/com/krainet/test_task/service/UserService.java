@@ -22,4 +22,8 @@ public interface UserService {
     List<UserEntity> getAllUsers(UserFilter filter, Pageable pageable);
 
     UserEntity updateUser(Long userId, UserUpdateDto userUpdateDto);
+
+    UserEntity updateUser(UserEntity user, UserUpdateDto userUpdateDto);
+
+    void deleteByUsername(String name);
 }

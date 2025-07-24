@@ -5,7 +5,8 @@ import com.krainet.test_task.dto.auth.AuthResponseDto;
 import com.krainet.test_task.dto.auth.RegisterRequestDto;
 import com.krainet.test_task.dto.user.UserResponseDto;
 import com.krainet.test_task.mapper.UserMapper;
-import com.krainet.test_task.security.AuthService;
+import com.krainet.test_task.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public class AuthController {
     private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public UserResponseDto register(@RequestBody RegisterRequestDto registerRequestDto){
+    public UserResponseDto register(@Valid @RequestBody RegisterRequestDto registerRequestDto){
         return userMapper.toDto(authService.registerUser(registerRequestDto));
     }
 

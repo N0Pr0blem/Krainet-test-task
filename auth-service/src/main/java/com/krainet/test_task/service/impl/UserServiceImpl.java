@@ -9,6 +9,8 @@ import com.krainet.test_task.repository.UserRepository;
 import com.krainet.test_task.service.UserService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,46 +23,57 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
     public UserEntity getUserById(Long userId) {
+        logger.info("Get user with ID: " + userId);
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException("error.user.not_found", userId, "GETTING_USER_EXCEPTION"));
     }
 
     @Override
     public List<UserEntity> getAllUsers() {
+        logger.info("Get all users ");
         return userRepository.findAll();
     }
 
     @Override
     public UserEntity addUser(UserRequestDto userRequestDto) {
         if (userRepository.findByUsername(userRequestDto.getUsername()).isPresent()) {
+            logger.warn("User with username: "+userRequestDto.getUsername()+" is present");
             throw new ApiException("error.user.username.exists", userRequestDto.getUsername());
         }
         if (userRepository.findByEmail(userRequestDto.getEmail()).isPresent()) {
+            logger.warn("User with email: "+userRequestDto.getEmail()+" is present");
             throw new ApiException("error.user.email.exists", userRequestDto.getEmail());
         }
-        return userRepository.save(UserEntity.builder()
+
+        UserEntity user= UserEntity.builder()
                 .username(userRequestDto.getUsername())
                 .password(userRequestDto.getPassword())
+                .firstName(userRequestDto.getFirstName())
+                .lastName(userRequestDto.getLastName())
                 .email(userRequestDto.getEmail())
                 .role(userRequestDto.getRole())
                 .isActive(true)
-                .build());
+                .build();
+
+        logger.info("Add new user: "+user.toString());
+
+        return userRepository.save(user);
     }
 
     @Override
     public void deleteById(Long userId) {
-        if (userRepository.existsById(userId)) {
-            userRepository.deleteById(userId);
-        } else {
-            throw new ApiException("error.user.not_found", userId, "USER_NOT_FOUND");
-        }
+        userRepository.delete(getUserById(userId));
+        logger.info("User with ID: "+userId+" was deleted");
     }
 
     @Override
     public UserEntity getUserByUsername(String name) {
+        logger.info("Try get user with username: "+name);
+
         return userRepository.findByUsername(name)
                 .orElseThrow(() -> new ApiException("error.user.username.not_found", name, "NO_SUCH_USER"));
     }
@@ -68,6 +81,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserEntity> getAllUsers(UserFilter filter, Pageable pageable) {
         Specification<UserEntity> spec = buildSpecification(filter);
+        logger.info("Get all users with specification: "+spec.toString());
 
         return userRepository.findAll(spec, pageable).stream().toList();
     }
@@ -76,14 +90,36 @@ public class UserServiceImpl implements UserService {
     public UserEntity updateUser(Long userId, UserUpdateDto userUpdateDto) {
         UserEntity user = getUserById(userId);
 
-        if (userUpdateDto.getRole() != null && !userUpdateDto.getRole().isEmpty()) {
-            user.setRole(userUpdateDto.getRole());
+        return updateUser(user, userUpdateDto);
+    }
+
+    @Override
+    public UserEntity updateUser(UserEntity user, UserUpdateDto userUpdateDto) {
+        if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
+            user.setUsername(userUpdateDto.getUsername());
+        }
+        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
+            user.setEmail(userUpdateDto.getEmail());
+        }
+        if (userUpdateDto.getFirstName() != null && !userUpdateDto.getFirstName().isEmpty()) {
+            user.setFirstName(userUpdateDto.getFirstName());
+        }
+        if (userUpdateDto.getLastName() != null && !userUpdateDto.getLastName().isEmpty()) {
+            user.setLastName(userUpdateDto.getLastName());
         }
         if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
             user.setPassword(userUpdateDto.getPassword());
         }
 
+        logger.info("User with ID: "+user.getId()+" updated");
+
         return userRepository.save(user);
+    }
+
+    @Override
+    public void deleteByUsername(String name) {
+        userRepository.delete(getUserByUsername(name));
+        logger.info("Delete user with username: "+name);
     }
 
     private Specification<UserEntity> buildSpecification(UserFilter filter) {

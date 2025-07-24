@@ -1,11 +1,15 @@
 package com.krainet.test_task.security;
 
+import com.krainet.test_task.service.SecurityService;
 import com.krainet.test_task.service.UserService;
+import com.krainet.test_task.service.impl.SecurityServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,21 +25,22 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final SecurityService securityService;
-
     private final UserService userService;
+
+    private Logger logger = LogManager.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
-        System.out.println(header);
+        logger.info(header);
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             if (securityService.validateToken(token)) {
                 String username = securityService.getUsernameFromToken(token);
                 String role = userService.getUserByUsername(username).getRole();
-                System.out.println(username + " " + role);
+                logger.info(username + " " + role);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, List.of(new SimpleGrantedAuthority(role)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
