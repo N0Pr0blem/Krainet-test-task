@@ -19,7 +19,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"username\":\"NoProblem\",\n    \"password\":\"123\"\n}",
+									"raw": "{\n    \"username\":\"Admin\",\n    \"password\":\"11111111\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -49,7 +49,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"first_name\": \"Olga\",\n    \"last_name\": \"Bezzubova\",\n    \"password\": \"11111111\",\n    \"email\": \"olga@olga.com\",\n    \"username\": \"super_olya\"\n}",
+									"raw": "{\n    \"first_name\": \"Olga\",\n    \"last_name\": \"Bezzubova\",\n    \"password\": \"11111111\",\n    \"email\": \"olga@olga.com\",\n    \"username\": \"Evrofa\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -116,45 +116,6 @@
 											"key": "sort",
 											"value": "id,desc"
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Add user",
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"first_name\": \"Olga\",\n    \"last_name\": \"Bezzubova\",\n    \"password\": \"11111111\",\n    \"email\": \"bumlimuydo@necub.com\",\n    \"username\": \"super_olya\",\n    \"role\":\"USER\"\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "localhost:8081/api/v1/users",
-									"host": [
-										"localhost"
-									],
-									"port": "8081",
-									"path": [
-										"api",
-										"v1",
-										"users"
 									]
 								}
 							},

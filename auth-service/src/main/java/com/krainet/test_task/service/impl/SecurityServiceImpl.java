@@ -50,7 +50,7 @@ public class SecurityServiceImpl implements SecurityService {
 
         return generateToken(user).toBuilder()
                 .id(user.getId())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .build();
     }
 

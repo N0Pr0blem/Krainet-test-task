@@ -1,5 +1,6 @@
 package com.krainet.test_task.config;
 
+import com.krainet.test_task.model.Role;
 import com.krainet.test_task.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(publicRoutes).permitAll()
-                        .requestMatchers(adminRoutes).hasAuthority("ADMIN")
+                        .requestMatchers(adminRoutes).hasAuthority(Role.ADMIN.name())
                         .requestMatchers(authenticateRoutes).authenticated()
                         .anyRequest().authenticated()
                 );
