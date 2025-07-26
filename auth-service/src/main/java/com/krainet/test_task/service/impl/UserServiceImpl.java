@@ -120,7 +120,7 @@ public class UserServiceImpl implements UserService {
                 user.setLastName(userUpdateDto.getLastName());
             }
             if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
-                user.setPassword(userUpdateDto.getPassword());
+                user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
             }
             sendMail(user, UserChangeType.UPDATED);
         }
@@ -142,27 +142,30 @@ public class UserServiceImpl implements UserService {
     public UserEntity updateUserForAdmin(Long userId, UserUpdateForAdminDto userUpdateDto) {
         UserEntity user = getUserById(userId);
 
-        if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
-            user.setUsername(userUpdateDto.getUsername());
-        }
-        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
-            user.setEmail(userUpdateDto.getEmail());
-        }
-        if (userUpdateDto.getFirstName() != null && !userUpdateDto.getFirstName().isEmpty()) {
-            user.setFirstName(userUpdateDto.getFirstName());
-        }
-        if (userUpdateDto.getLastName() != null && !userUpdateDto.getLastName().isEmpty()) {
-            user.setLastName(userUpdateDto.getLastName());
-        }
-        if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
-            user.setPassword(userUpdateDto.getPassword());
-        }
-        if (userUpdateDto.getRole() != null && !userUpdateDto.getRole().isEmpty()) {
-            user.setRole(userUpdateDto.getRole());
-        }
+        if (userRepository.findByUsername(userUpdateDto.getUsername()).isEmpty()
+                && userRepository.findByEmail(userUpdateDto.getEmail()).isEmpty()
+        ) {
+            if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
+                user.setUsername(userUpdateDto.getUsername());
+            }
+            if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
+                user.setEmail(userUpdateDto.getEmail());
+            }
+            if (userUpdateDto.getFirstName() != null && !userUpdateDto.getFirstName().isEmpty()) {
+                user.setFirstName(userUpdateDto.getFirstName());
+            }
+            if (userUpdateDto.getLastName() != null && !userUpdateDto.getLastName().isEmpty()) {
+                user.setLastName(userUpdateDto.getLastName());
+            }
+            if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            }
+            if (userUpdateDto.getRole() != null && !userUpdateDto.getRole().isEmpty()) {
+                user.setRole(userUpdateDto.getRole());
+            }
 
-        sendMail(user, UserChangeType.UPDATED);
-
+            sendMail(user, UserChangeType.UPDATED);
+        }
         logger.info("User with ID: " + user.getId() + " updated by Admin");
 
         return userRepository.save(user);
