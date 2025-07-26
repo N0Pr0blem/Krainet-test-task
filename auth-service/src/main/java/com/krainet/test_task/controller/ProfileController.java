@@ -5,6 +5,7 @@ import com.krainet.test_task.dto.user.UserUpdateDto;
 import com.krainet.test_task.mapper.UserMapper;
 import com.krainet.test_task.model.UserEntity;
 import com.krainet.test_task.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class ProfileController {
     }
 
     @PatchMapping
-    public ResponseEntity<UserResponseDto> updateProfile(@RequestBody UserUpdateDto userUpdateDto, Principal principal){
+    public ResponseEntity<UserResponseDto> updateProfile(@Valid @RequestBody UserUpdateDto userUpdateDto, Principal principal){
         UserEntity user = userService.getUserByUsername(principal.getName());
         return ResponseEntity.ok(
                 userMapper.toDto(userService.updateUser(user, userUpdateDto))

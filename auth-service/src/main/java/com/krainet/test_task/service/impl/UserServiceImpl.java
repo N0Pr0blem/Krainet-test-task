@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(Long userId) {
         UserEntity user = getUserById(userId);
 
-        sendMail(user,UserChangeType.DELETED);
+        sendMail(user, UserChangeType.DELETED);
         userRepository.delete(user);
         logger.info("User with ID: " + userId + " was deleted");
     }
@@ -103,23 +103,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity updateUser(UserEntity user, UserUpdateDto userUpdateDto) {
-        if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
-            user.setUsername(userUpdateDto.getUsername());
-        }
-        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
-            user.setEmail(userUpdateDto.getEmail());
-        }
-        if (userUpdateDto.getFirstName() != null && !userUpdateDto.getFirstName().isEmpty()) {
-            user.setFirstName(userUpdateDto.getFirstName());
-        }
-        if (userUpdateDto.getLastName() != null && !userUpdateDto.getLastName().isEmpty()) {
-            user.setLastName(userUpdateDto.getLastName());
-        }
-        if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
-            user.setPassword(userUpdateDto.getPassword());
-        }
-        sendMail(user,UserChangeType.UPDATED);
 
+        if (userRepository.findByUsername(userUpdateDto.getUsername()).isEmpty()
+                && userRepository.findByEmail(userUpdateDto.getEmail()).isEmpty()
+        ) {
+            if (userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
+                user.setUsername(userUpdateDto.getUsername());
+            }
+            if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
+                user.setEmail(userUpdateDto.getEmail());
+            }
+            if (userUpdateDto.getFirstName() != null && !userUpdateDto.getFirstName().isEmpty()) {
+                user.setFirstName(userUpdateDto.getFirstName());
+            }
+            if (userUpdateDto.getLastName() != null && !userUpdateDto.getLastName().isEmpty()) {
+                user.setLastName(userUpdateDto.getLastName());
+            }
+            if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
+                user.setPassword(userUpdateDto.getPassword());
+            }
+            sendMail(user, UserChangeType.UPDATED);
+        }
         logger.info("User with ID: " + user.getId() + " updated");
 
         return userRepository.save(user);
@@ -129,7 +133,7 @@ public class UserServiceImpl implements UserService {
     public void deleteByUsername(String name) {
         UserEntity user = getUserByUsername(name);
 
-        sendMail(user,UserChangeType.DELETED);
+        sendMail(user, UserChangeType.DELETED);
         userRepository.delete(user);
         logger.info("Delete user with username: " + name);
     }
@@ -157,7 +161,7 @@ public class UserServiceImpl implements UserService {
             user.setRole(userUpdateDto.getRole());
         }
 
-        sendMail(user,UserChangeType.UPDATED);
+        sendMail(user, UserChangeType.UPDATED);
 
         logger.info("User with ID: " + user.getId() + " updated by Admin");
 
