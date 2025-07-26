@@ -2,6 +2,7 @@ package com.krainet.test_task.dto.user;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.krainet.test_task.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,7 +26,7 @@ public class UserRequestDto {
     private String email;
 
     @NotBlank(message = "{error.user.dto.valid.role.not_blank}")
-    private String role;
+    private Role role;
 
     @NotBlank(message = "{error.user.dto.valid.first_name.not_blank}")
     private String firstName;

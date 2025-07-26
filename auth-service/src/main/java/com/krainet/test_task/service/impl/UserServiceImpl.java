@@ -2,6 +2,7 @@ package com.krainet.test_task.service.impl;
 
 import com.krainet.test_task.dto.user.*;
 import com.krainet.test_task.exception.ApiException;
+import com.krainet.test_task.model.Role;
 import com.krainet.test_task.model.UserChangeType;
 import com.krainet.test_task.model.UserEntity;
 import com.krainet.test_task.repository.UserRepository;
@@ -160,7 +161,7 @@ public class UserServiceImpl implements UserService {
             if (userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
             }
-            if (userUpdateDto.getRole() != null && !userUpdateDto.getRole().isEmpty()) {
+            if (userUpdateDto.getRole() != null) {
                 user.setRole(userUpdateDto.getRole());
             }
 
@@ -192,7 +193,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void sendMail(UserEntity user, UserChangeType userChangeType) {
-        if (user.getRole().equals("USER")) {
+        if (user.getRole().equals(Role.USER)) {
             mailService.sendMails(userRepository.getAdminsEmail(),
                     UserMailDto.builder()
                             .username(user.getUsername())

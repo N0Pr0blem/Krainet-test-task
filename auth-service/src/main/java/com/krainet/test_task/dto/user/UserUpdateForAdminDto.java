@@ -2,6 +2,7 @@ package com.krainet.test_task.dto.user;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.krainet.test_task.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -21,7 +22,7 @@ public class UserUpdateForAdminDto {
     @Email(message = "{error.user.dto.valid.email.not_email}")
     private String email;
 
-    private String role;
+    private Role role;
 
     private String firstName;
 

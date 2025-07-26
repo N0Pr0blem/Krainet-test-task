@@ -4,6 +4,7 @@ import com.krainet.test_task.dto.auth.AuthRequestDto;
 import com.krainet.test_task.dto.auth.AuthResponseDto;
 import com.krainet.test_task.dto.auth.RegisterRequestDto;
 import com.krainet.test_task.dto.user.UserRequestDto;
+import com.krainet.test_task.model.Role;
 import com.krainet.test_task.model.UserEntity;
 import com.krainet.test_task.security.TokenDetails;
 import com.krainet.test_task.service.AuthService;
@@ -27,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     public UserEntity registerUser(RegisterRequestDto registerRequestDto) {
         UserRequestDto registerUser = UserRequestDto.builder()
                 .email(registerRequestDto.getEmail())
-                .role("USER")
+                .role(Role.USER)
                 .username(registerRequestDto.getUsername())
                 .password(registerRequestDto.getPassword())
                 .firstName(registerRequestDto.getFirstName())
