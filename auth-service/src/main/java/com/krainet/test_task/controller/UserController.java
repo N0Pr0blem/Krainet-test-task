@@ -27,18 +27,6 @@ public class UserController {
     private final UserMapper userMapper;
     private final MessageSource messageSource;
 
-    @PostMapping()
-    public ResponseEntity<UserResponseDto> addUser(@Valid @RequestBody UserRequestDto userRequestDto,
-                                                   UriComponentsBuilder uriComponentsBuilder
-    ) {
-        UserResponseDto userResponseDto = userMapper.toDto(userService.addUser(userRequestDto));
-        return ResponseEntity
-                .created(uriComponentsBuilder
-                        .pathSegment("{userId}")
-                        .build(Map.of("userId",userResponseDto.getId())))
-                .body(userResponseDto);
-    }
-
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable(name = "userId") Long userId) {
         UserResponseDto userResponseDto = userMapper.toDto(userService.getUserById(userId));
