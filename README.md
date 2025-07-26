@@ -26,7 +26,7 @@ sudo docker-compose up --build
 ```
 ***
 # Для теста функционала
-*  Есть _postman_ коллекция _test-task.postman_collection.json_
+*  Есть _postman_ коллекция _my_collection.json_
 *  Пароль от _User_ и _Admin_ - __11111111__
 ***
 # Дополнительная информация
